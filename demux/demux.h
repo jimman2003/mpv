@@ -204,6 +204,9 @@ typedef struct demuxer {
     bool is_streaming; // implies a "slow" input, such as network or FUSE
     int stream_origin; // any STREAM_ORIGIN_* (set from source stream)
     bool access_references; // allow opening other files/URLs
+    int index_mode;
+    double mf_fps;
+    char *mf_type;
 
     // Bitmask of DEMUX_EVENT_*
     int events;

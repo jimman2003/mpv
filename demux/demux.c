@@ -92,7 +92,10 @@ struct demux_opts {
     int donate_fw;
     double min_secs;
     int force_seekable;
+    int index_mode;
     double min_secs_cache;
+    double mf_fps;
+    char *mf_type;
     int access_references;
     int seekable_cache;
     int create_ccs;
@@ -125,6 +128,9 @@ const struct m_sub_options demux_conf = {
         {"access-references", OPT_FLAG(access_references)},
         {"demuxer-seekable-cache", OPT_CHOICE(seekable_cache,
             {"auto", -1}, {"no", 0}, {"yes", 1})},
+        {"index", OPT_CHOICE(index_mode, {"default", 1}, {"recreate", 0})},
+        {"mf-fps", OPT_DOUBLE(mf_fps)},
+        {"mf-type", OPT_STRING(mf_type)},
         {"sub-create-cc-track", OPT_FLAG(create_ccs)},
         {"stream-record", OPT_STRING(record_file)},
         {"video-backward-overlap", OPT_CHOICE(video_back_preroll, {"auto", -1}),
@@ -148,6 +154,7 @@ const struct m_sub_options demux_conf = {
         .max_bytes = 150 * 1024 * 1024,
         .max_bytes_bw = 50 * 1024 * 1024,
         .donate_fw = 1,
+        .mf_fps = 1.0,
         .min_secs = 1.0,
         .min_secs_cache = 1000.0 * 60 * 60,
         .seekable_cache = -1,
@@ -2978,6 +2985,9 @@ static void demux_copy(struct demuxer *dst, struct demuxer *src)
     dst->stream_origin = src->stream_origin;
     dst->priv = src->priv;
     dst->metadata = mp_tags_dup(dst, src->metadata);
+    dst->index_mode = src->index_mode;
+    dst->mf_fps = src->mf_fps;
+    dst->mf_type = src->mf_type;
 }
 
 // Update metadata after initialization. If sh==NULL, it's global metadata,

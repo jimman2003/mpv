@@ -2020,10 +2020,8 @@ static int demux_mkv_open(demuxer_t *demuxer, enum demux_check check)
     mkv_d->segment_start = stream_tell(s);
     mkv_d->segment_end = end_pos;
 
-    mp_read_option_raw(demuxer->global, "index", &m_option_type_choice,
-                       &mkv_d->index_mode);
-    mp_read_option_raw(demuxer->global, "edition", &m_option_type_choice,
-                       &mkv_d->edition_id);
+    mkv_d->index_mode = demuxer->index_mode;
+    mkv_d->edition_id = demuxer->edition;
     mkv_d->opts = mp_get_config_group(mkv_d, demuxer->global, &demux_mkv_conf);
 
     if (demuxer->params && demuxer->params->matroska_was_valid)

@@ -58,6 +58,7 @@ static void print_version(struct mp_log *log)
 }
 
 extern const struct m_sub_options tv_params_conf;
+extern const struct m_sub_options stream_bluray_conf;
 extern const struct m_sub_options stream_cdda_conf;
 extern const struct m_sub_options stream_dvb_conf;
 extern const struct m_sub_options stream_lavf_conf;
@@ -451,7 +452,7 @@ static const m_option_t mp_opts[] = {
 #endif
     {"edition", OPT_CHOICE(edition_id, {"auto", -1}), M_RANGE(0, 8190)},
 #if HAVE_LIBBLURAY
-    {"bluray-device", OPT_STRING(bluray_device), .flags = M_OPT_FILE},
+    {"bluray", OPT_SUBSTRUCT(stream_bluray_opts, stream_bluray_conf)},
 #endif /* HAVE_LIBBLURAY */
 
 // ------------------------- demuxer options --------------------
@@ -484,8 +485,6 @@ static const m_option_t mp_opts[] = {
     {"image-display-duration", OPT_DOUBLE(image_display_duration),
         M_RANGE(0, INFINITY)},
 
-     {"index", OPT_CHOICE(index_mode, {"default", 1}, {"recreate", 0})},
-
     // select audio/video/subtitle stream
     // keep in sync with num_ptracks[] and MAX_PTRACKS
     {"aid", OPT_TRACKCHOICE(stream_id[0][STREAM_AUDIO])},
@@ -512,7 +511,7 @@ static const m_option_t mp_opts[] = {
 
 #if HAVE_CDDA
     {"cdda", OPT_SUBSTRUCT(stream_cdda_opts, stream_cdda_conf)},
-    {"cdrom-device", OPT_STRING(cdrom_device), .flags = M_OPT_FILE},
+    {"cdrom-device", OPT_REPLACED("cdda-device")},
 #endif
 
     // demuxer.c - select audio/sub file/demuxer
@@ -527,8 +526,6 @@ static const m_option_t mp_opts[] = {
     {"cache-pause-initial", OPT_FLAG(cache_pause_initial)},
     {"cache-pause-wait", OPT_FLOAT(cache_pause_wait), M_RANGE(0, DBL_MAX)},
 
-    {"mf-fps", OPT_DOUBLE(mf_fps)},
-    {"mf-type", OPT_STRING(mf_type)},
 #if HAVE_DVBIN
     {"dvbin", OPT_SUBSTRUCT(stream_dvb_opts, stream_dvb_conf)},
 #endif
@@ -1024,18 +1021,12 @@ static const struct MPOpts mp_default_opts = {
         .auto_safe = 1,
     },
 
-    .index_mode = 1,
-
-    .mf_fps = 1.0,
-
     .display_tags = (char **)(const char*[]){
         "Artist", "Album", "Album_Artist", "Comment", "Composer",
         "Date", "Description", "Genre", "Performer", "Rating",
         "Series", "Title", "Track", "icy-title", "service_name",
         NULL
     },
-
-    .cuda_device = -1,
 };
 
 const struct m_sub_options mp_opt_root = {

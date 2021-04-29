@@ -88,6 +88,22 @@ struct bluray_priv_s {
     bool use_nav;
 };
 
+struct bluray_params {
+    char *bluray_device;
+};
+
+#define OPT_BASE_STRUCT struct bluray_params
+const struct m_sub_options stream_bluray_conf = {
+    .opts = (const m_option_t[]) {
+        {"device", OPT_STRING(bluray_device), .flags = M_OPT_FILE},
+        {0}
+    },
+    .size = sizeof(struct bluray_params),
+    .defaults = &(const struct bluray_params){
+        .bluray_device = "",
+    },
+};
+
 static void destruct(struct bluray_priv_s *priv)
 {
     if (priv->title_info)
@@ -377,8 +393,8 @@ static int bluray_stream_open_internal(stream_t *s)
     if (b->cfg_device && b->cfg_device[0]) {
         device = b->cfg_device;
     } else {
-        mp_read_option_raw(s->global, "bluray-device", &m_option_type_string,
-                           &device);
+        struct bluray_params *params = mp_get_config_group(s, s->global, &stream_bluray_conf);
+        device = params->bluray_device;
     }
 
     if (!device || !device[0]) {
