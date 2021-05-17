@@ -80,6 +80,10 @@ enum mp_voctrl {
     // be updated and redrawn. Optional; emulated if not available.
     VOCTRL_REDRAW_FRAME,
 
+    // The windowing/os backend may have some sort of frame callback type of
+    // function we should wait on.
+    VOCTRL_WAIT_CALLBACK,
+
     // Only used internally in vo_opengl_cb
     VOCTRL_PREINIT,
     VOCTRL_UNINIT,

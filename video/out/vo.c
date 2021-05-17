@@ -951,12 +951,16 @@ static bool render_frame(struct vo *vo)
         if (can_queue)
             wakeup_core(vo);
 
+        bool callback = vo->driver->control(vo, VOCTRL_WAIT_CALLBACK, NULL);
+
         stats_time_start(in->stats, "video-draw");
 
-        if (vo->driver->draw_frame) {
-            vo->driver->draw_frame(vo, frame);
-        } else {
-            vo->driver->draw_image(vo, mp_image_new_ref(frame->current));
+        if (callback) {
+            if (vo->driver->draw_frame) {
+                vo->driver->draw_frame(vo, frame);
+            } else {
+                vo->driver->draw_image(vo, mp_image_new_ref(frame->current));
+            }
         }
 
         stats_time_end(in->stats, "video-draw");

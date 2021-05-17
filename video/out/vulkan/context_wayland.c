@@ -29,28 +29,9 @@ struct priv {
     struct mpvk_ctx vk;
 };
 
-static bool wayland_vk_start_frame(struct ra_ctx *ctx)
-{
-    struct vo_wayland_state *wl = ctx->vo->wl;
-
-    bool render = !wl->hidden || wl->opts->disable_vsync;
-
-    if (wl->frame_wait && wl->presentation)
-        vo_wayland_sync_clear(wl);
-
-    if (render)
-        wl->frame_wait = true;
-
-    return render;
-}
-
 static void wayland_vk_swap_buffers(struct ra_ctx *ctx)
 {
     struct vo_wayland_state *wl = ctx->vo->wl;
-
-    if (!wl->opts->disable_vsync)
-        vo_wayland_wait_frame(wl);
-
     if (wl->presentation)
         wayland_sync_swap(wl);
 }
@@ -93,7 +74,6 @@ static bool wayland_vk_init(struct ra_ctx *ctx)
     };
 
     struct ra_vk_ctx_params params = {
-        .start_frame = wayland_vk_start_frame,
         .swap_buffers = wayland_vk_swap_buffers,
         .get_vsync = wayland_vk_get_vsync,
     };
